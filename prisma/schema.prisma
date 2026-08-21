@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Business {
+  id                                  String        @id @default(uuid())
+  name                                String
+  description                         String?
+  phone                               String?
+  email                               String?       @unique
+  password                            String? // For Email/Password Auth
+  website                             String?
+  address                             String?
+  timezone                            String        @default("UTC")
+  openingHours                        Json?
+  humanHandoffNumber                  String?
+  vapiAssistantId                     String?
+  calApiKeyEncryptedOrSecureReference String?
+  calEventTypeId                      String?
+  createdAt                           DateTime      @default(now())
+  updatedAt                           DateTime      @updatedAt
+  knowledgeBase                       KnowledgeItem[]
+  callers                             Caller[]
+  appointments                        Appointment[]
+  calls                               Call[]
+}
+
+model KnowledgeItem {
+  id         String   @id @default(uuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category   String // "INFO", "SERVICE", "FAQ", "POLICY"
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Caller {
+  id               String        @id @default(uuid())
+  businessId       String
+  business         Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name             String?
+  phone            String?
+  email            String?
+  serviceRequested String?
+  firstContactAt   DateTime      @default(now())
+  lastContactAt    DateTime      @updatedAt
+  status           String        @default("New")
+  notes            String?
+  appointments     Appointment[]
+  calls            Call[]
+
+  @@unique([businessId, phone])
+  @@unique([businessId, email])
+}
+
+model Appointment {
+  id           String   @id @default(uuid())
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  callerId     String?
+  caller       Caller?  @relation(fields: [callerId], references: [id], onDelete: SetNull)
+  calBookingId String? // ID from Cal.com
+  eventType    String?
+  startTime    DateTime
+  endTime      DateTime
+  timezone     String   @default("UTC")
+  status       String   @default("Confirmed")
+  notes        String?
+  createdAt    DateTime @default(now())
+  calls        Call[]
+}
+
+model Call {
+  id                 String       @id @default(uuid())
+  businessId         String
+  business           Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  callerId           String?
+  caller             Caller?      @relation(fields: [callerId], references: [id], onDelete: SetNull)
+  vapiCallId         String       @unique
+  phoneNumber        String?
+  startedAt          DateTime
+  endedAt            DateTime?
+  duration           Int?
+  transcript         String?      @db.Text
+  summary            String?      @db.Text
+  reasonForCall      String?
+  outcome            String?
+  appointmentId      String?
+  appointment        Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  transferredToHuman Boolean      @default(false)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
