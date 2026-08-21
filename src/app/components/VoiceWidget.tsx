@@ -59,6 +59,7 @@ export default function VoiceWidget() {
       setStatus("idle");
       setErrorMsg(event?.error || "Call failed to connect. Check your Vapi assistant ID and API key.");
       setIsExpanded(true);
+      vapi.stop();
     });
 
     vapi.on("error", (e: any) => {
@@ -77,6 +78,7 @@ export default function VoiceWidget() {
           "An error occurred.";
         setErrorMsg(String(msg));
         setIsExpanded(true);
+        vapi.stop();
       }
     });
 
@@ -116,6 +118,8 @@ export default function VoiceWidget() {
 
     setStatus("connecting");
     try {
+      // Ensure any previous stuck state is cleared
+      vapi.stop();
       const call = await vapi.start(assistantId);
       if (!call) {
         setStatus("idle");
@@ -127,6 +131,7 @@ export default function VoiceWidget() {
       setStatus("idle");
       setErrorMsg(e?.message || "Failed to start call.");
       setIsExpanded(true);
+      vapi.stop();
     }
   };
 
