@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     // In a real production app, you would use RAG / vector search here.
     // For MVP, we just return the full knowledge base or a simple text search.
     
-    const relevantInfo = knowledge.map(k => `${k.category} - ${k.title}: ${k.content}`).join("\n");
+    const relevantInfo = knowledge.map((k: { category: string; title: string; content: string }) => `${k.category} - ${k.title}: ${k.content}`).join("\n");
 
     return NextResponse.json({
       results: [

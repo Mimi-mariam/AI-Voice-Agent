@@ -162,7 +162,6 @@ export default function VoiceWidget() {
         )}
 
         <button
-          onClick={status === "idle" ? handleToggleCall : undefined}
           onContextMenu={(e) => { e.preventDefault(); setIsExpanded(!isExpanded); }}
           className={`relative w-16 h-16 rounded-full shadow-xl flex items-center justify-center transition-all duration-200 select-none
             ${status === "idle"
@@ -172,10 +171,10 @@ export default function VoiceWidget() {
               : "bg-yellow-500 cursor-not-allowed"
             }`}
           title={status === "idle" ? "Click to call, right-click for options" : "Click to end call"}
-          onClick={(e) => {
+          onClick={() => {
             if (status === "active" || status === "idle") {
-              handleToggleCall();
               if (status === "idle") setIsExpanded(true);
+              handleToggleCall();
             }
           }}
         >
