@@ -62,10 +62,20 @@ export default function VoiceWidget() {
     });
 
     vapi.on("error", (e: any) => {
-      console.error("Vapi error:", e);
+      console.error("Vapi error (full):", JSON.stringify(e, null, 2), e);
       if (status !== "active") {
         setStatus("idle");
-        setErrorMsg(typeof e === "string" ? e : e?.message || "An error occurred.");
+        // Try to extract the most useful error message from various Vapi error shapes
+        const msg =
+          (typeof e === "string" ? e : null) ||
+          e?.error?.message ||
+          e?.error ||
+          e?.message ||
+          e?.errorMsg ||
+          e?.reason ||
+          JSON.stringify(e) ||
+          "An error occurred.";
+        setErrorMsg(String(msg));
         setIsExpanded(true);
       }
     });
