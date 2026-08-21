@@ -123,8 +123,9 @@ export default function VoiceWidget() {
       const call = await vapi.start(assistantId);
       if (!call) {
         setStatus("idle");
-        setErrorMsg("Failed to start call — check your Vapi assistant ID.");
         setIsExpanded(true);
+        // Only set the generic error if the event listeners didn't already set a more specific one
+        setErrorMsg((prev) => prev || "Failed to start call — check your Vapi assistant ID or API key.");
       }
     } catch (e: any) {
       console.error("Failed to start call:", e);
