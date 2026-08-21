@@ -143,7 +143,7 @@ export default function VoiceWidget() {
   };
 
   const statusLabel: Record<CallStatus, string> = {
-    idle: "Talk to AI",
+    idle: "Talk to Assistant",
     connecting: "Connecting…",
     active: "Live",
     ending: "Ending…",
