@@ -24,7 +24,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ results: [{ toolCallId, result: "You must ask the user what specific day they want to book before checking availability. E.g., 'What day would you like to come in?'" }] });
     }
 
-    const business = await prisma.business.findUnique({ where: { id: businessId } });
+    let business = await prisma.business.findUnique({ where: { id: businessId } });
+    if (!business) {
+      business = await prisma.business.findFirst();
+    }
+
     if (!business || !business.calApiKeyEncryptedOrSecureReference || !business.calEventTypeId) {
       const mockSlots = ["10:00 AM", "1:00 PM", "3:30 PM"];
       return NextResponse.json({ 

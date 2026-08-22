@@ -19,12 +19,27 @@ export async function POST(req: Request) {
     const { businessId, startTime, customerName, customerEmail, customerPhone, timezone, notes } = parsedArgs;
 
     if (!businessId || !startTime || !customerName || !customerEmail) {
-      return NextResponse.json({ results: [{ toolCallId: messageId, result: "Missing required booking details (businessId, startTime, customerName, customerEmail)." }] });
+      return NextResponse.json({ results: [{ toolCallId: messageId, result: "Missing required booking details (startTime, customerName, customerEmail)." }] });
     }
 
-    const business = await prisma.business.findUnique({ where: { id: businessId } });
+    let business = await prisma.business.findUnique({ where: { id: businessId } });
+    if (!business) {
+      // Fallback for MVP: If Vapi sends a hardcoded/wrong ID, just grab the first business
+      business = await prisma.business.findFirst();
+    }
+
     if (!business) {
       return NextResponse.json({ results: [{ toolCallId: messageId, result: "Business not found." }] });
+    }
+
+    const parsedDate = new Date(startTime);
+    if (isNaN(parsedDate.getTime())) {
+      return NextResponse.json({ 
+        results: [{ 
+          toolCallId: messageId, 
+          result: "Invalid startTime format. You must provide a full date and time, like '2026-08-28T10:00:00Z'. Please re-confirm the exact date and time with the user." 
+        }] 
+      });
     }
 
     let calBookingId = "mock-id-123";
@@ -45,13 +60,13 @@ export async function POST(req: Request) {
     }
 
     let caller = await prisma.caller.findUnique({
-      where: { businessId_phone: { businessId, phone: customerPhone || "" } }
+      where: { businessId_phone: { businessId: business.id, phone: customerPhone || "" } }
     });
 
     if (!caller && customerPhone) {
       caller = await prisma.caller.create({
         data: {
-          businessId,
+          businessId: business.id,
           name: customerName,
           email: customerEmail,
           phone: customerPhone,
@@ -62,11 +77,11 @@ export async function POST(req: Request) {
 
     await prisma.appointment.create({
       data: {
-        businessId,
+        businessId: business.id,
         callerId: caller?.id,
         calBookingId: calBookingId,
-        startTime: new Date(startTime),
-        endTime: new Date(new Date(startTime).getTime() + 30 * 60000), // Default 30 min if cal doesn't return end time
+        startTime: parsedDate,
+        endTime: new Date(parsedDate.getTime() + 30 * 60000),
         timezone: timezone || "UTC",
         status: "Confirmed",
       }

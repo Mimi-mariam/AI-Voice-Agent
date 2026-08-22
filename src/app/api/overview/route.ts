@@ -11,13 +11,16 @@ export async function GET(req: Request) {
 
   const businessId = session.user.id;
 
-  const [callsCount, appointmentsCount, leadsCount] = await Promise.all([
+  const [business, callsCount, appointmentsCount, leadsCount] = await Promise.all([
+    prisma.business.findUnique({ where: { id: businessId } }),
     prisma.call.count({ where: { businessId } }),
     prisma.appointment.count({ where: { businessId } }),
     prisma.caller.count({ where: { businessId } }),
   ]);
 
   return NextResponse.json({
+    businessName: business?.name || "My Business",
+    slug: business?.slug || "mikes-business",
     totalCalls: callsCount,
     appointments: appointmentsCount,
     totalLeads: leadsCount,
