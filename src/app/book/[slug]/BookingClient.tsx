@@ -3,6 +3,7 @@
 import { useState } from "react";
 import AssistantModal from "@/app/components/AssistantModal";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function BookingClient({ business, services, faqs }: any) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,12 +16,6 @@ export default function BookingClient({ business, services, faqs }: any) {
           <h1 className="text-2xl font-bold tracking-tight">{business.name}</h1>
           <p className="text-xs uppercase tracking-widest mt-0.5 opacity-80">Hair • Beauty • Care</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="text-sm font-medium border border-white/30 bg-black/20 backdrop-blur-md px-6 py-2.5 rounded-full hover:bg-white/10 transition-all"
-        >
-          Talk to AI
-        </button>
       </nav>
 
       {/* Hero Section */}
@@ -37,9 +32,6 @@ export default function BookingClient({ business, services, faqs }: any) {
         </div>
         
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto mt-20">
-          <span className="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-6 animate-fade-in-up">
-            Welcome to the future of booking
-          </span>
           <h2 className="text-5xl md:text-7xl font-serif text-white mb-6 leading-tight drop-shadow-lg">
             Your next appointment, <br/>
             <span className="text-rose-300 italic">your way.</span>
@@ -174,6 +166,9 @@ export default function BookingClient({ business, services, faqs }: any) {
 
       <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-500 text-sm">
         <p>&copy; {new Date().getFullYear()} {business.name}. Powered by AI.</p>
+        <Link href="/login" className="mt-3 inline-block text-xs text-gray-400 hover:text-gray-600 transition-colors">
+          Owner Login
+        </Link>
       </footer>
 
       {/* Modal */}
