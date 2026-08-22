@@ -1,13 +1,19 @@
 export async function getCalAvailability(apiKey: string, eventTypeId: number, startTime: string, endTime: string) {
   if (!apiKey) throw new Error("Cal.com API key is missing");
 
-  // Format: GET /v1/availability?eventTypeId=X&startTime=Y&endTime=Z
-  const url = `https://api.cal.com/v1/availability?apiKey=${apiKey}&eventTypeId=${eventTypeId}&startTime=${startTime}&endTime=${endTime}`;
+  // Format: GET /v2/slots?eventTypeId=X&start=Y&end=Z
+  const url = `https://api.cal.com/v2/slots?eventTypeId=${eventTypeId}&start=${startTime}&end=${endTime}`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "cal-api-version": "2024-08-13"
+    }
+  });
   
   if (!response.ok) {
-    throw new Error(`Cal.com availability error: ${response.statusText}`);
+    const text = await response.text();
+    throw new Error(`Cal.com availability error: ${response.statusText} ${text}`);
   }
 
   return response.json();
@@ -24,24 +30,24 @@ export async function createCalBooking(
 ) {
   if (!apiKey) throw new Error("Cal.com API key is missing");
 
-  const url = `https://api.cal.com/v1/bookings?apiKey=${apiKey}`;
+  const url = `https://api.cal.com/v2/bookings`;
 
   const payload = {
     eventTypeId,
     start,
-    responses: {
+    attendee: {
       name,
       email,
-      notes: notes || "",
-    },
-    timeZone,
-    metadata: {},
+      timeZone,
+    }
   };
 
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+      "cal-api-version": "2024-08-13"
     },
     body: JSON.stringify(payload),
   });
