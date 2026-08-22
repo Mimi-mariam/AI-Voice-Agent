@@ -43,18 +43,38 @@ export async function POST(req: Request) {
       const start = new Date(`${preferredDate}T00:00:00Z`).toISOString();
       const end = new Date(`${preferredDate}T23:59:59Z`).toISOString();
 
-      await getCalAvailability(
+      const calData = await getCalAvailability(
         business.calApiKeyEncryptedOrSecureReference,
         parseInt(business.calEventTypeId),
         start,
         end
       );
       
+      let availableTimes: string[] = [];
+      if (calData?.data?.slots) {
+        Object.values(calData.data.slots).forEach((daySlots: any) => {
+          daySlots.forEach((slot: any) => {
+            if (slot.time) {
+               const date = new Date(slot.time);
+               // Format the time for the AI to read easily
+               availableTimes.push(date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: timezone || 'UTC' }));
+            }
+          });
+        });
+      }
+
+      let resultText = "";
+      if (availableTimes.length > 0) {
+        resultText = `Availability check completed. I have the following slots available on ${preferredDate} (${timezone || 'UTC'}): ${availableTimes.slice(0, 5).join(", ")}.`;
+      } else {
+        resultText = `I checked Cal.com, but there are no available slots on ${preferredDate}. Please ask the user for another date.`;
+      }
+
       return NextResponse.json({
         results: [
           {
             toolCallId,
-            result: `Availability check completed. I have 10 AM, 1 PM, and 3 PM available on ${preferredDate}.`,
+            result: resultText,
           }
         ]
       });

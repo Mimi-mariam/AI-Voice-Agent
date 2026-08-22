@@ -1,8 +1,8 @@
 export async function getCalAvailability(apiKey: string, eventTypeId: number, startTime: string, endTime: string) {
   if (!apiKey) throw new Error("Cal.com API key is missing");
 
-  // Format: GET /v2/slots?eventTypeId=X&start=Y&end=Z
-  const url = `https://api.cal.com/v2/slots?eventTypeId=${eventTypeId}&start=${startTime}&end=${endTime}`;
+  // Format: GET /v2/slots/available?eventTypeId=X&startTime=Y&endTime=Z
+  const url = `https://api.cal.com/v2/slots/available?eventTypeId=${eventTypeId}&startTime=${startTime}&endTime=${endTime}`;
 
   const response = await fetch(url, {
     headers: {
