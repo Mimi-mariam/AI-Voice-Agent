@@ -2,7 +2,6 @@
 import LinkNext from "next/link";
 import { signOut } from "next-auth/react";
 import { ReactNode } from "react";
-import VoiceWidget from "@/app/components/VoiceWidget";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -46,17 +45,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <main className="flex-1 flex flex-col">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
           <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
-          <div>
-            <span className="text-sm text-gray-500">Mike's Business</span>
-          </div>
         </header>
         <div className="p-8 flex-1 overflow-y-auto">
           {children}
         </div>
       </main>
-
-      {/* Floating AI Voice Widget */}
-      <VoiceWidget />
     </div>
   );
 }
