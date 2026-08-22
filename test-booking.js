@@ -8,7 +8,7 @@ async function testBooking() {
 
   const payload = {
     eventTypeId,
-    start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+    start: "2026-08-24T08:00:00.000Z", // Monday 8 AM
     attendee: {
       name: "Test User",
       email: "test@example.com",

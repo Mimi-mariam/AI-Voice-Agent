@@ -4,12 +4,12 @@ async function testAvailability() {
   const apiKey = process.env.CAL_API_KEY;
   const eventTypeId = '6769213';
 
-  // Test for today
+  // Test for next 30 days
   const start = new Date();
   start.setUTCHours(0,0,0,0);
   
   const end = new Date(start);
-  end.setDate(end.getDate() + 1);
+  end.setDate(end.getDate() + 30);
   end.setUTCHours(23,59,59,999);
 
   const url = `https://api.cal.com/v2/slots/available?eventTypeId=${eventTypeId}&startTime=${start.toISOString()}&endTime=${end.toISOString()}`;

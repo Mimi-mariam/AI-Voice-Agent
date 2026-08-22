@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         timezone || "UTC",
         notes
       );
-      calBookingId = booking.id?.toString();
+      calBookingId = booking.data?.id?.toString() || booking.id?.toString();
     }
 
     let caller = await prisma.caller.findUnique({
