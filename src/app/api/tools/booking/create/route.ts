@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/database";
 import { createCalBooking } from "@/lib/cal";
 
-export default async function POST(req: Request) {
+export async function POST(req: Request) {
   let messageId = "unknown";
   try {
     const body = await req.json();

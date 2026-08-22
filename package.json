@@ -9,6 +9,11 @@
     "lint": "eslint",
     "postinstall": "prisma generate"
   },
+  "allowScripts": {
+    "@prisma/engines": true,
+    "prisma": true,
+    "unrs-resolver": true
+  },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
