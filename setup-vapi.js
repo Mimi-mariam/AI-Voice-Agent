@@ -66,6 +66,25 @@ const tools = [
   {
     type: "function",
     function: {
+      name: "get_available_appointments",
+      description: "Checks real availability for appointments on Cal.com.",
+      parameters: {
+        type: "object",
+        properties: {
+          businessId: { type: "string", description: "The business ID" },
+          service: { type: "string", description: "The requested service" },
+          preferredDate: { type: "string", description: "The preferred date in YYYY-MM-DD format" },
+          preferredTime: { type: "string", description: "The preferred time, if any" },
+          timezone: { type: "string", description: "The caller's timezone, e.g. America/New_York" }
+        },
+        required: ["businessId", "preferredDate"]
+      }
+    },
+    server: { url: `${BASE_URL}/api/tools/booking/availability` }
+  },
+  {
+    type: "function",
+    function: {
       name: "handoff",
       description: "Transfers the call to a human agent when the caller requests it or the issue is too complex.",
       parameters: {
@@ -82,30 +101,37 @@ const tools = [
   }
 ];
 
-const systemPrompt = `You are a professional AI receptionist for Mike's Business, a consulting firm.
+const systemPrompt = `You are a professional AI Assistant for Luxe Hair Studio.
 
 Your business ID is: ${BUSINESS_ID}
 Always pass this exact value as the "businessId" argument in every tool call you make.
 
 ## Your Role
-You handle inbound calls professionally. You can:
+You handle customer inquiries and bookings professionally. You can:
 1. Answer questions about the business using the getKnowledge tool
-2. Book appointments using the createBooking tool
-3. Save caller information using the saveCallerInfo tool
-4. Transfer to a human agent using the handoff tool if needed
+2. Check real availability using the get_available_appointments tool
+3. Book appointments using the createBooking tool
+4. Save caller information using the saveCallerInfo tool
+5. Transfer to a human agent using the handoff tool if needed
 
-## How to Handle Calls
-1. Greet the caller warmly (already done via First Message)
-2. Listen to their needs
-3. Use getKnowledge to answer any questions about services, pricing, hours, or policies
-4. If they want to book: collect their name, email, phone, and preferred time, then use createBooking
-5. Always save the caller's info using saveCallerInfo at the end of the call
-6. If the caller is upset or the issue is too complex, use the handoff tool to transfer them
+## Personality
+- Warm, helpful, friendly, concise, professional, natural, and confident.
+- Ask ONE question at a time.
+- Avoid long responses.
+- Understand conversational language.
+- Help customers decide what to book.
+- Answer questions using the business knowledge base.
+- Guide customers toward booking.
+- NEVER invent information. If you don't know: "I'm not sure about that. I can connect you with someone from the studio who can help."
 
-## Tone
-- Professional, warm, and concise
-- Never make up information — always use getKnowledge for business facts
-- Keep responses short (this is a voice call, not a chat)`;
+## How to Handle Bookings
+1. If they ask about services, use getKnowledge to inform them.
+2. If they want to book, ask what day works for them.
+3. Use get_available_appointments to check real availability for that day.
+4. Present the available times to the customer.
+5. Once they choose a time, collect their name, email, and phone.
+6. Use createBooking to finalize the appointment.
+7. ONLY tell them the booking is confirmed AFTER createBooking succeeds. Never fake a booking.`;
 
 async function updateAssistant() {
   console.log('Updating Vapi assistant with tools and server URL...');
@@ -125,6 +151,7 @@ async function updateAssistant() {
         ],
         tools: tools,
       },
+      firstMessage: "Hi! Welcome to Luxe Hair Studio. I'm your AI Assistant. How can I help you today?",
       serverUrl: `${BASE_URL}/api/webhooks/vapi`,
     }),
   });

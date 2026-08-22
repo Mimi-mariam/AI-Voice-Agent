@@ -2,16 +2,22 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/database";
 
 export async function POST(req: Request) {
+  let messageId = "unknown";
   try {
     const body = await req.json();
     const { message } = body;
-    const args = message?.toolCall?.function?.arguments || {};
-    const parsedArgs = typeof args === "string" ? JSON.parse(args) : args;
     
+    // Support multiple Vapi payload formats
+    const toolCallList = message?.toolWithToolCallList || message?.toolCallList || [];
+    const toolCall = message?.toolCall || toolCallList[0]?.toolCall;
+    const args = toolCall?.function?.arguments || {};
+    messageId = toolCall?.id || "unknown";
+    
+    const parsedArgs = typeof args === "string" ? JSON.parse(args) : args;
     const { businessId, name, phone, email, reasonForCall, serviceRequested } = parsedArgs;
 
     if (!businessId || !phone) {
-      return NextResponse.json({ results: [{ toolCallId: message?.toolCall?.id, result: "Missing businessId or phone" }] });
+      return NextResponse.json({ results: [{ toolCallId: messageId, result: "Missing businessId or phone" }] });
     }
 
     let caller = await prisma.caller.findUnique({
@@ -44,7 +50,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       results: [
         {
-          toolCallId: message?.toolCall?.id,
+          toolCallId: messageId,
           result: `Caller saved successfully. ID: ${caller.id}`,
         }
       ]
@@ -52,6 +58,13 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error("Caller save tool error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ 
+      results: [
+        {
+          toolCallId: messageId,
+          result: `Error saving caller: ${error.message}`
+        }
+      ]
+    });
   }
 }
