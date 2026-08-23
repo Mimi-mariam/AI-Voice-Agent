@@ -51,14 +51,14 @@ const tools = [
         type: "object",
         properties: {
           businessId: { type: "string", description: "The business ID" },
-          startTime: { type: "string", description: "The appointment start time in ISO 8601 format" },
+          startTime: { type: "string", description: "The appointment start time in exact ISO 8601 format (e.g. 2026-08-28T10:00:00.000Z). ALWAYS convert the caller's local time to a proper ISO string based on their timezone." },
           customerName: { type: "string", description: "The caller's full name" },
-          customerEmail: { type: "string", description: "The caller's email address" },
+          customerEmail: { type: "string", description: "The caller's email address (optional, do not ask for it)" },
           customerPhone: { type: "string", description: "The caller's phone number" },
           timezone: { type: "string", description: "The caller's timezone, e.g. America/New_York" },
           notes: { type: "string", description: "Any additional notes for the booking" }
         },
-        required: ["businessId", "startTime", "customerName", "customerEmail"]
+        required: ["businessId", "startTime", "customerName", "customerPhone"]
       }
     },
     server: { url: `${BASE_URL}/api/tools/booking/create` }

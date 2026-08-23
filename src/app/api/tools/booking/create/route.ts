@@ -18,8 +18,10 @@ export async function POST(req: Request) {
     
     const { businessId, startTime, customerName, customerEmail, customerPhone, timezone, notes } = parsedArgs;
 
-    if (!businessId || !startTime || !customerName || !customerEmail) {
-      return NextResponse.json({ results: [{ toolCallId: messageId, result: "Missing required booking details (startTime, customerName, customerEmail)." }] });
+    const email = customerEmail || `${customerName.replace(/\\s+/g, '').toLowerCase()}@example.com`;
+    
+    if (!businessId || !startTime || !customerName || !customerPhone) {
+      return NextResponse.json({ results: [{ toolCallId: messageId, result: "Missing required booking details (startTime, customerName, customerPhone)." }] });
     }
 
     let business = await prisma.business.findUnique({ where: { id: businessId } });
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
         parseInt(business.calEventTypeId),
         startTime,
         customerName,
-        customerEmail,
+        email,
         timezone || "UTC",
         notes
       );
@@ -68,7 +70,7 @@ export async function POST(req: Request) {
         data: {
           businessId: business.id,
           name: customerName,
-          email: customerEmail,
+          email: email,
           phone: customerPhone,
           status: "Booked"
         }
