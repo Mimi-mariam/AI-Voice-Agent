@@ -148,7 +148,7 @@ async function updateAssistant() {
     body: JSON.stringify({
       model: {
         provider: 'openai',
-        model: 'gpt-4.1',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt }
         ],
