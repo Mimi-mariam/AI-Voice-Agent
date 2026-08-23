@@ -151,18 +151,6 @@ export default function BookingClient({ business, services, faqs }: any) {
         </div>
       </section>
 
-      {/* Sticky Mobile CTA */}
-      <div className="md:hidden fixed bottom-6 left-6 right-6 z-30">
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="w-full py-4 bg-rose-500 text-white rounded-full font-medium shadow-[0_10px_40px_rgba(244,63,94,0.4)] flex items-center justify-center gap-2 active:scale-95 transition-transform"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-          </svg>
-          Talk to AI Assistant
-        </button>
-      </div>
 
       <footer className="bg-gray-50 border-t border-gray-100 py-12 text-center text-gray-500 text-sm">
         <p>&copy; {new Date().getFullYear()} {business.name}. Powered by AI.</p>
