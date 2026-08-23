@@ -49,15 +49,16 @@ export default function AssistantModal({ assistantId, isOpen, onClose, businessN
 
     vapi.on("call-start-failed", (event: any) => {
       setStatus("idle");
-      setErrorMsg(event?.error || "Call failed to connect.");
+      const errorVal = event?.error || "Call failed to connect.";
+      setErrorMsg(typeof errorVal === "string" ? errorVal : JSON.stringify(errorVal));
       vapi.stop();
     });
 
     vapi.on("error", (e: any) => {
       if (status !== "listening" && status !== "processing" && status !== "speaking") {
         setStatus("idle");
-        const msg = e?.error?.message || e?.message || e?.reason || "An error occurred.";
-        setErrorMsg(String(msg));
+        const msg = e?.error?.message || e?.message || e?.reason || e;
+        setErrorMsg(typeof msg === "string" ? msg : JSON.stringify(msg));
         vapi.stop();
       }
     });
@@ -84,7 +85,8 @@ export default function AssistantModal({ assistantId, isOpen, onClose, businessN
         }
       }).catch((e) => {
         setStatus("idle");
-        setErrorMsg(e?.message || "Failed to start call.");
+        const catchErr = e?.message || e;
+        setErrorMsg(typeof catchErr === "string" ? catchErr : JSON.stringify(catchErr));
         vapi.stop();
       });
     }
