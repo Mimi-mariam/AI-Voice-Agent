@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const VAPI_API_KEY = process.env.VAPI_API_KEY;
-const ASSISTANT_ID = '8aeeacf6-77b4-443a-b77c-bf954ab24479';
+const ASSISTANT_ID = 'f9ccc3ab-b5f7-4a4c-95b5-4eb3328a41af';
 const BASE_URL = 'https://ai-voice-agent-ruddy.vercel.app';
 const BUSINESS_ID = '7fedb1ad-a4cb-4d86-90d2-0d52751400e6';
 
